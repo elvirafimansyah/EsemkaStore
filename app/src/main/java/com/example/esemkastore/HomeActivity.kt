@@ -39,6 +39,8 @@ class HomeActivity : AppCompatActivity() {
     setContentView(R.layout.activity_home)
     supportActionBar!!.title = "Home"
     supportActionBar!!.setBackgroundDrawable(ColorDrawable(Color.parseColor("#E67E23")))
+//    val intent = Intent(this@HomeActivity, CartActivity::class.java)
+//    startActivity(intent)
     initComponents()
     setupListener()
     setupList()
@@ -67,6 +69,8 @@ class HomeActivity : AppCompatActivity() {
           replaceActivity(HomeActivity())
           Toast.makeText(this@HomeActivity, "Home", Toast.LENGTH_SHORT).show();
         } else if(position == 1) {
+          replaceActivity(CartActivity())
+
           Toast.makeText(this@HomeActivity, "Cart", Toast.LENGTH_SHORT).show();
         } else if(position == 2) {
           Toast.makeText(this@HomeActivity, "History", Toast.LENGTH_SHORT).show();
