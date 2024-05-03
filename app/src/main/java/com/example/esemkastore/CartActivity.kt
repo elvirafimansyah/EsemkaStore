@@ -77,8 +77,18 @@ class CartActivity : AppCompatActivity() {
     cartAdapter.setData(cartItem)
   }
   private fun setupList() {
-    cartAdapter = CartAdapter(arrayListOf())
+    cartAdapter = CartAdapter(this@CartActivity, arrayListOf())  { position ->
+      // Call function to delete item from cartItem list
+      deleteCartItem(position)
+      cartAdapter.setData(cartItem)
+    }
     rvCart.adapter = cartAdapter
+  }
+
+  fun deleteCartItem(position: Int) {
+    cartItem.removeAt(position)
+    cartAdapter.notifyItemRemoved(position)
+    saveCartItems()
   }
 
   private fun setupListener() {

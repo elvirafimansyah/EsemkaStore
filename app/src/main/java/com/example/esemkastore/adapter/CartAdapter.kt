@@ -1,5 +1,7 @@
 package com.example.esemkastore.adapter
 
+import android.content.Context
+import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,13 +9,17 @@ import android.widget.AbsListView.RecyclerListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.esemkastore.R
 import com.example.esemkastore.model.CartResponse
 
 class CartAdapter(
-  var items: ArrayList<CartResponse>
+  val context: Context,
+  var items: ArrayList<CartResponse>,
+  val onDeleteClickListener: (Int) -> Unit
 ): RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
   class MyViewHolder(val view : View) : RecyclerView.ViewHolder(view) {
+    val ivDelete = view.findViewById<ImageView>(R.id.iv_cart_delete)
     val ivCart = view.findViewById<ImageView>(R.id.iv_cart)
     val tvName = view.findViewById<TextView>(R.id.tv_cart_name)
     val tvCount = view.findViewById<TextView>(R.id.tv_cart_count)
@@ -32,6 +38,19 @@ class CartAdapter(
     holder.tvName.text = results.name
     holder.tvPrice.text = results.price
     holder.tvCount.text = results.count
+    Glide.with(context).load("http://10.0.2.2:5000/api/Home/Item/Photo/${results.id}")
+      .override(100,100)
+      .error(R.drawable.box)
+      .centerCrop()
+      .into(holder.ivCart)
+
+
+    holder.ivDelete.setOnClickListener {
+      onDeleteClickListener.invoke(holder.adapterPosition)
+//      items.removeAt(position)
+//      notifyItemRemoved(position)
+//      notifyItemRangeChanged(position, itemCount)
+    }
   }
 
   public fun setData(result: List<CartResponse>) {
