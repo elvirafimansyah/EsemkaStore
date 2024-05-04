@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.example.esemkastore.adapter.ItemAdapter
 import com.example.esemkastore.model.ItemResponse
+import com.example.esemkastore.model.LoginResponse
 import com.example.esemkastore.retrofit.RetrofitClient
 import com.example.esemkastore.service.ItemApi
 import com.google.android.material.tabs.TabItem
@@ -26,13 +28,28 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class HomeActivity : AppCompatActivity() {
+  private lateinit var tvWelcome: TextView
   private lateinit var tabLayout : TabLayout
   private lateinit var rvItem : RecyclerView
   private lateinit var itemAdapter: ItemAdapter
+  private val users by lazy { intent.getSerializableExtra("login") as? LoginResponse }
+  private lateinit var name : String
+  private lateinit var id : String
+
   private fun initComponents() {
     tabLayout = findViewById(R.id.tb_home)
     rvItem = findViewById(R.id.rv_item)
+    tvWelcome = findViewById(R.id.tv_welcome)
+    name =  this.getSharedPreferences("user_info", MODE_PRIVATE).getString("name", null).toString()
+    id =  this.getSharedPreferences("user_info", MODE_PRIVATE).getInt("id", 1).toString()
+    Log.i("homeactivity", name)
+    if(name != null ) {
+      tvWelcome.text = "Welcome " + name + id
+    } else {
+      tvWelcome.text = "Welcome User"
+    }
   }
+
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

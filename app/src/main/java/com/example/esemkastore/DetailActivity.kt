@@ -120,7 +120,7 @@ class DetailActivity : AppCompatActivity() {
         val intent = Intent(this@DetailActivity, CartActivity::class.java)
         intent.putExtra("name", tvName.text.toString())
         intent.putExtra("count", etQty.text.toString())
-        intent.putExtra("price", tvTotal.text.toString())
+        intent.putExtra("price", tvTotal.text.substring(17))
         if(itemId != -1) {
           intent.putExtra("id", itemId.toString())
         }

@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".CartActivity">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -15,21 +14,45 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:background="@drawable/bg_input"
-            android:id="@+id/rv_cart"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <androidx.recyclerview.widget.RecyclerView
+                android:background="@drawable/bg_input"
+                android:id="@+id/rv_cart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/cart_item" />
+
+            <Spinner
+                android:background="@drawable/bg_input"
+                android:id="@+id/spinner_cart"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="30dp"
+            android:id="@+id/tv_cart_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Total Price: 85000"
+            android:textSize="20dp"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_marginTop="10dp"
+            android:id="@+id/btn_checkout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="3"
-            tools:listitem="@layout/cart_item" />
-
-        <Spinner
-            android:background="@drawable/bg_input"
-            android:id="@+id/spinner_cart"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp" />
+            android:text="Checkout"
+            app:cornerRadius="5sp"/>
     </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
@@ -55,5 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="History" />
+
+
     </com.google.android.material.tabs.TabLayout>
 </LinearLayout>

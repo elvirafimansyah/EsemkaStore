@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
 
     val intent = Intent(this@MainActivity, HomeActivity::class.java)
     if(sharedPrefences.contains("email") && sharedPrefences.contains("password")) {
+      intent.putExtra("name", sharedPrefences.getString("name", null))
+      intent.putExtra("id", sharedPrefences.getInt("id", 1))
       startActivity(intent)
     }
 
@@ -75,9 +77,12 @@ class MainActivity : AppCompatActivity() {
           val editor :  SharedPreferences.Editor = sharedPrefences.edit()
           editor.putString("email", loginReq.email)
           editor.putString("password", loginReq.password)
+          editor.putString("name", result!!.name)
+          editor.putInt("id", result.id)
           editor.apply()
           val intent = Intent(this@MainActivity, HomeActivity::class.java)
           intent.putExtra("login", result)
+          intent.putExtra("name", result.name)
           startActivity(intent)
         } else {
           Toast.makeText(this@MainActivity, "Login Failed!", Toast.LENGTH_SHORT).show()

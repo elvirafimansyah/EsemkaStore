@@ -36,20 +36,17 @@ class CartAdapter(
   override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
     val results = items[position]
     holder.tvName.text = results.name
-    holder.tvPrice.text = results.price
-    holder.tvCount.text = results.count
+    holder.tvPrice.text = "Price: " + results.price
+    holder.tvCount.text = "Count: " + results.count
     Glide.with(context).load("http://10.0.2.2:5000/api/Home/Item/Photo/${results.id}")
       .override(100,100)
       .error(R.drawable.box)
       .centerCrop()
       .into(holder.ivCart)
 
-
     holder.ivDelete.setOnClickListener {
       onDeleteClickListener.invoke(holder.adapterPosition)
-//      items.removeAt(position)
-//      notifyItemRemoved(position)
-//      notifyItemRangeChanged(position, itemCount)
+
     }
   }
 

@@ -8,33 +8,47 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.esemkastore.adapter.CartAdapter
 import com.example.esemkastore.model.CartResponse
+import com.example.esemkastore.model.ServiceResponse
+import com.example.esemkastore.retrofit.RetrofitClient
+import com.example.esemkastore.service.ServiceApi
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import okhttp3.internal.notify
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CartActivity : AppCompatActivity() {
   private lateinit var tabLayout: TabLayout
   private lateinit var cartAdapter: CartAdapter
   private lateinit var rvCart : RecyclerView
+  private lateinit var serviceSpinner: Spinner
+  private lateinit var tvTotal: TextView
+  private lateinit var btnCheckout: MaterialButton
+
   private var cartItem: ArrayList<CartResponse> = arrayListOf()
   private lateinit var name: String
   private lateinit var count: String
   private lateinit var price: String
   private lateinit var itemId: String
   private lateinit var sharedPreferences: SharedPreferences
+  var totalPrice = 0
 
   private fun initComponents() {
     tabLayout = findViewById(R.id.tb_home)
     rvCart = findViewById(R.id.rv_cart)
+    serviceSpinner = findViewById(R.id.spinner_cart)
+    tvTotal = findViewById(R.id.tv_cart_total)
+    btnCheckout = findViewById(R.id.btn_checkout)
 
     Log.i("item", name)
   }
@@ -54,6 +68,14 @@ class CartActivity : AppCompatActivity() {
     loadCartItems()
     getCartItem()
     saveCartItems()
+
+    val tab = tabLayout.getTabAt(1)
+    val adapter = cartAdapter.itemCount
+
+    tab?.setText("Cart(${adapter})")
+
+    getService()
+    loadTotalPrice()
   }
 
   override fun onPause() {
@@ -76,6 +98,7 @@ class CartActivity : AppCompatActivity() {
     cartItem = gson.fromJson(json, type) ?: ArrayList()
     cartAdapter.setData(cartItem)
   }
+
   private fun setupList() {
     cartAdapter = CartAdapter(this@CartActivity, arrayListOf())  { position ->
       // Call function to delete item from cartItem list
@@ -94,6 +117,7 @@ class CartActivity : AppCompatActivity() {
   private fun setupListener() {
     val tab = tabLayout.getTabAt(1)
     tab?.select()
+
     tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
       override fun onTabSelected(p0: TabLayout.Tab?) {
         val position: Int = p0!!.position
@@ -113,6 +137,16 @@ class CartActivity : AppCompatActivity() {
       override fun onTabReselected(p0: TabLayout.Tab?) {}
 
     })
+
+
+    btnCheckout.setOnClickListener {
+      if(cartAdapter.itemCount == 0) {
+        Toast.makeText(this@CartActivity, "Cart Item kosong", Toast.LENGTH_SHORT).show()
+      } else {
+        val userId = this.getSharedPreferences("user_info", MODE_PRIVATE).getInt("id", 1)
+        
+      }
+    }
   }
 
   private fun getCartItem () {
@@ -131,6 +165,47 @@ class CartActivity : AppCompatActivity() {
       Log.e("getCartItem", "ItemId is empty")
     }
   }
+
+  private fun loadTotalPrice() {
+    for(item in cartAdapter.items) {
+      totalPrice += item.price!!.toInt()
+    }
+    tvTotal.text = "Total Price: Rp. " + totalPrice.toString()
+  }
+
+  fun loadSpinner(names: List<String?>) {
+    val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, names)
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    serviceSpinner.adapter = adapter
+  }
+
+  private fun getService() {
+    val apiService = RetrofitClient.retrofitInstance.create(ServiceApi::class.java)
+    val call = apiService.getService()
+    call.enqueue(object : Callback<ArrayList<ServiceResponse>> {
+      override fun onResponse(
+        p0: Call<ArrayList<ServiceResponse>>,
+        response: Response<ArrayList<ServiceResponse>>
+      ) {
+        if(response.isSuccessful) {
+          val result = response.body()
+          val list = mutableListOf<String>()
+          result?.forEach {service ->
+            val formattedService = "${service.name} - Rp. ${service.price} (${service.duration} day(s) )"
+            list.add(formattedService)
+          }
+
+          loadSpinner(list)
+        }
+      }
+
+      override fun onFailure(p0: Call<ArrayList<ServiceResponse>>, p1: Throwable) {
+        Log.i("service", p1.toString())
+      }
+
+    })
+  }
+
   fun replaceActivity(activity: Activity) {
     val intent = Intent(this@CartActivity, activity::class.java)
     startActivity(intent)
